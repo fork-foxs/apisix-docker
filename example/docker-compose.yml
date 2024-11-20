@@ -96,6 +96,23 @@ services:
     networks:
       apisix:
 
+  dashboard:
+    image: harbor.fintechsys.net/api-gateway-six/apisix-dashboard:latest
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./dashboard_conf/config.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
+    depends_on:
+      - etcd
+    ports:
+      - "9000:9000/tcp"
+    networks:
+      apisix:
+
+
+
 networks:
   apisix:
     driver: bridge

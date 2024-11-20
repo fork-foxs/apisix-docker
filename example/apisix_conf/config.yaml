@@ -29,6 +29,8 @@ deployment:
     allow_admin:               # https://nginx.org/en/docs/http/ngx_http_access_module.html#allow
       - 0.0.0.0/0              # We need to restrict ip access rules for security. 0.0.0.0/0 is for test.
 
+  # TODO: change admin pass
+
     admin_key:
       - name: "admin"
         key: edd1c9f034335f136f87ad84b625c8f1
@@ -49,3 +51,4 @@ plugin_attr:
     export_addr:
       ip: "0.0.0.0"
       port: 9091
+
