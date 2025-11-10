@@ -52,17 +52,17 @@ plugin_attr:
       ip: "0.0.0.0"
       port: 9091
 
-plugins:                            # Enabled plugins
-  - rate-limit                      # Rate limiting
-  - limit-conn                      # Connection limiting
-  - limit-count                     # Request count limiting
-  - cors                            # Cross-Origin Resource Sharing
-  - key-auth                        # Key-based authentication
-  - ip-restriction                  # IP restriction
-  - prometheus                      # Metrics for monitoring
-  - proxy-rewrite                   # Proxy rewrite
-  - syslog                          # Logging to Syslog
-  - jwt-auth                        # JWT authentication
-  - proxy-cache                     # Proxy caching
-  - fault-injection                 # Simulating faults for testing
-  - request-id                      # Adding request IDs to logs
+# plugins:                            # Enabled plugins
+#   - rate-limit                      # Rate limiting
+#   - limit-conn                      # Connection limiting
+#   - limit-count                     # Request count limiting
+#   - cors                            # Cross-Origin Resource Sharing
+#   - key-auth                        # Key-based authentication
+#   - ip-restriction                  # IP restriction
+#   - prometheus                      # Metrics for monitoring
+#   - proxy-rewrite                   # Proxy rewrite
+#   - syslog                          # Logging to Syslog
+#   - jwt-auth                        # JWT authentication
+#   - proxy-cache                     # Proxy caching
+#   - fault-injection                 # Simulating faults for testing
+#   - request-id                      # Adding request IDs to logs
