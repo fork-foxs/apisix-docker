@@ -18,12 +18,23 @@
 apisix:
   node_listen: 9080              # APISIX listening port
   enable_ipv6: false
-
+  
+  # Cluster configuration
+  cluster:
+    name: "apisix-cluster"       # Cluster name
+    discovery:
+      type: "etcd"               # Use etcd for service discovery
+    
   enable_control: true
   control:
     ip: "0.0.0.0"
     port: 9092
 
+  # Stream proxy for TCP/UDP
+  stream_proxy:                  # TCP/UDP proxy
+    tcp:                         # TCP proxy port list
+      - 9100
+    
 deployment:
   admin:
     allow_admin:               # https://nginx.org/en/docs/http/ngx_http_access_module.html#allow
@@ -45,6 +56,15 @@ deployment:
       - "http://etcd:2379"          # multiple etcd address
     prefix: "/apisix"               # apisix configurations prefix
     timeout: 30                     # 30 seconds
+    # Health check for etcd
+    health_check_timeout: 10
+    health_check_interval: 30
+    # Resilience settings
+    retry_delay: 5
+    max_retries: 3
+    # Keepalive settings
+    keepalive_timeout: 60
+    keepalive_pool: 30
 
 plugin_attr:
   prometheus:

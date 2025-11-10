@@ -15,11 +15,42 @@
 # limitations under the License.
 #
 datasources:
- - access: 'proxy'
-   editable: true
-   is_default: true
-   name: 'apisix'
-   org_id: 1
-   type: 'prometheus'
-   url: 'http://prometheus:9090'
-   version: 1
+  - access: 'proxy'
+    editable: true
+    is_default: true
+    name: 'APISIX Cluster'
+    org_id: 1
+    type: 'prometheus'
+    url: 'http://prometheus:9090'
+    version: 1
+    jsonData:
+      timeInterval: "5s"
+      queryTimeout: "60s"
+      httpMethod: "POST"
+    secureJsonData: {}
+  - access: 'proxy'
+    editable: true
+    is_default: false
+    name: 'APISIX Dashboard'
+    org_id: 1
+    type: 'prometheus'
+    url: 'http://dashboard:9091'
+    version: 1
+    jsonData:
+      timeInterval: "10s"
+      queryTimeout: "60s"
+      httpMethod: "POST"
+    secureJsonData: {}
+  - access: 'proxy'
+    editable: true
+    is_default: false
+    name: 'etcd Cluster'
+    org_id: 1
+    type: 'prometheus'
+    url: 'http://etcd:2379'
+    version: 1
+    jsonData:
+      timeInterval: "10s"
+      queryTimeout: "60s"
+      httpMethod: "POST"
+    secureJsonData: {}
