@@ -48,11 +48,11 @@ services:
         max_attempts: 3
       resources:
         limits:
-          cpus: '8'
-          memory: 7.2G
+          cpus: '16'
+          memory: 32G
         reservations:
-          cpus: '4'
-          memory: 3.6G
+          cpus: '8'
+          memory: 16G
       placement:
         constraints:
           - node.role == worker
@@ -242,11 +242,11 @@ services:
         max_attempts: 3
       resources:
         limits:
-          cpus: '0.5'
-          memory: 512M
+          cpus: '16'
+          memory: 32G
         reservations:
-          cpus: '0.25'
-          memory: 256M
+          cpus: '4'
+          memory: 8G
       placement:
         constraints:
           - node.role == worker
