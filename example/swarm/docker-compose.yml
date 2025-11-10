@@ -31,7 +31,7 @@ configs:
   grafana_dashboards:
     file: ./grafana_conf/provisioning/dashboards/all.yaml
   grafana_dashboard_json:
-    file: ./apisix-grafana-dashboard.json
+    file: ./grafana_conf/dashboards/apisix-grafana-dashboard.json
   web1_config:
     file: ./upstream/web1.conf
   web2_config:
