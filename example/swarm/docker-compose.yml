@@ -17,6 +17,26 @@
 
 version: "3.8"
 
+configs:
+  apisix_config:
+    file: ./apisix_conf/config.yaml
+  dashboard_config:
+    file: ./dashboard_conf/config.yaml
+  prometheus_config:
+    file: ./prometheus_conf/prometheus.yml
+  grafana_config:
+    file: ./grafana_conf/config/grafana.ini
+  grafana_datasources:
+    file: ./grafana_conf/provisioning/datasources/all.yaml
+  grafana_dashboards:
+    file: ./grafana_conf/provisioning/dashboards/all.yaml
+  grafana_dashboard_json:
+    file: ./apisix-grafana-dashboard.json
+  web1_config:
+    file: ./upstream/web1.conf
+  web2_config:
+    file: ./upstream/web2.conf
+
 services:
   apisix:
     image: apache/apisix:${APISIX_IMAGE_TAG:-3.14.1-debian}
@@ -36,8 +56,10 @@ services:
       placement:
         constraints:
           - node.role == worker
-    volumes:
-      - ./apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
+    configs:
+      - source: apisix_config
+        target: /usr/local/apisix/conf/config.yaml
+        mode: 0444
     depends_on:
       - etcd
     ports:
@@ -97,8 +119,10 @@ services:
       placement:
         constraints:
           - node.role == worker
-    volumes:
-      - ./upstream/web1.conf:/etc/nginx/nginx.conf
+    configs:
+      - source: web1_config
+        target: /etc/nginx/nginx.conf
+        mode: 0444
     ports:
       - "9081:80/tcp"
     environment:
@@ -124,8 +148,10 @@ services:
       placement:
         constraints:
           - node.role == worker
-    volumes:
-      - ./upstream/web2.conf:/etc/nginx/nginx.conf
+    configs:
+      - source: web2_config
+        target: /etc/nginx/nginx.conf
+        mode: 0444
     ports:
       - "9082:80/tcp"
     environment:
@@ -151,8 +177,10 @@ services:
       placement:
         constraints:
           - node.role == worker
-    volumes:
-      - ./prometheus_conf/prometheus.yml:/etc/prometheus/prometheus.yml
+    configs:
+      - source: prometheus_config
+        target: /etc/prometheus/prometheus.yml
+        mode: 0444
     ports:
       - "9090:9090"
     networks:
@@ -178,10 +206,19 @@ services:
           - node.role == worker
     ports:
       - "3002:3000"
-    volumes:
-      - "./grafana_conf/provisioning:/etc/grafana/provisioning"
-      - "./grafana_conf/dashboards:/var/lib/grafana/dashboards"
-      - "./grafana_conf/config/grafana.ini:/etc/grafana/grafana.ini"
+    configs:
+      - source: grafana_config
+        target: /etc/grafana/grafana.ini
+        mode: 0444
+      - source: grafana_datasources
+        target: /etc/grafana/provisioning/datasources/all.yaml
+        mode: 0444
+      - source: grafana_dashboards
+        target: /etc/grafana/provisioning/dashboards/all.yaml
+        mode: 0444
+      - source: grafana_dashboard_json
+        target: /var/lib/grafana/dashboards/apisix-grafana-dashboard.json
+        mode: 0444
     networks:
       - apisix
 
@@ -203,8 +240,10 @@ services:
       placement:
         constraints:
           - node.role == worker
-    volumes:
-      - ./dashboard_conf/config.yaml:/usr/local/apisix-dashboard/conf/conf.yaml
+    configs:
+      - source: dashboard_config
+        target: /usr/local/apisix-dashboard/conf/conf.yaml
+        mode: 0444
     depends_on:
       - etcd
     ports:
