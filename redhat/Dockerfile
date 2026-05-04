@@ -17,7 +17,7 @@
 
 FROM registry.access.redhat.com/ubi9/ubi:9.6
 
-ARG APISIX_VERSION=3.15.0
+ARG APISIX_VERSION=3.16.0
 LABEL apisix_version="${APISIX_VERSION}"
 COPY ./yum.repos.d/apache-apisix.repo /etc/yum.repos.d/apache-apisix.repo
 COPY ./yum.repos.d/openresty.repo /etc/yum.repos.d/openresty.repo
@@ -35,15 +35,21 @@ WORKDIR /usr/local/apisix
 
 ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin
 
+RUN groupadd --system --gid 636 apisix \
+    && useradd --system --gid apisix --no-create-home --shell /usr/sbin/nologin --uid 636 apisix \
+    && chown -R apisix:0 /usr/local/apisix \
+    && chmod -R g=u /usr/local/apisix
+
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /usr/local/apisix/logs/access.log \
     && ln -sf /dev/stderr /usr/local/apisix/logs/error.log \
     && rm /usr/local/openresty/bin/etcdctl
 
+USER apisix
+
 EXPOSE 9080 9443
 
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
-COPY ./check_standalone_config.sh /check_standalone_config.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

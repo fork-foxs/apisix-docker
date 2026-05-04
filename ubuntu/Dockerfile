@@ -17,7 +17,7 @@
 
 FROM ubuntu:24.04
 
-ARG APISIX_VERSION=3.15.0
+ARG APISIX_VERSION=3.16.0
 
 RUN set -ex; \
     arch=$(dpkg --print-architecture); \
@@ -53,7 +53,8 @@ ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/
 
 RUN groupadd --system --gid 636 apisix \
     && useradd --system --gid apisix --no-create-home --shell /usr/sbin/nologin --uid 636 apisix \
-    && chown -R apisix:apisix /usr/local/apisix
+    && chown -R apisix:0 /usr/local/apisix \
+    && chmod -R g=u /usr/local/apisix
 
 USER apisix
 
@@ -64,7 +65,6 @@ RUN ln -sf /dev/stdout /usr/local/apisix/logs/access.log \
 EXPOSE 9080 9443
 
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
-COPY ./check_standalone_config.sh /check_standalone_config.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 

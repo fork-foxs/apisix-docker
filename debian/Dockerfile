@@ -15,23 +15,23 @@
 # limitations under the License.
 #
 
-FROM debian:bullseye-slim
+FROM debian:bookworm-slim
 
-ARG APISIX_VERSION=3.15.0
+ARG APISIX_VERSION=3.16.0
 
 RUN set -ex; \
     arch=$(dpkg --print-architecture); \
     apt update; \
     apt-get -y install --no-install-recommends wget gnupg ca-certificates curl;\
-    codename=`grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release`; \
+    codename="debian12"; \
     case "${arch}" in \
       amd64) \
         wget -O - https://repos.apiseven.com/pubkey.gpg | apt-key add - \
-        && echo "deb https://repos.apiseven.com/packages/debian $codename main" | tee /etc/apt/sources.list.d/apisix.list \
+        && echo "deb https://repos.apiseven.com/packages/debian debian12 main" | tee /etc/apt/sources.list.d/apisix.list \
         ;; \
       arm64) \
         wget -O - https://repos.apiseven.com/pubkey.gpg | apt-key add - \
-        && echo "deb https://repos.apiseven.com/packages/arm64/debian $codename main" | tee /etc/apt/sources.list.d/apisix.list \
+        && echo "deb https://repos.apiseven.com/packages/arm64/debian debian12 main" | tee /etc/apt/sources.list.d/apisix.list \
         ;; \
     esac; \
     apt update \
@@ -53,7 +53,8 @@ ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/
 
 RUN groupadd --system --gid 636 apisix \
     && useradd --system --gid apisix --no-create-home --shell /usr/sbin/nologin --uid 636 apisix \
-    && chown -R apisix:apisix /usr/local/apisix
+    && chown -R apisix:0 /usr/local/apisix \
+    && chmod -R g=u /usr/local/apisix
 
 USER apisix
 
@@ -64,7 +65,6 @@ RUN ln -sf /dev/stdout /usr/local/apisix/logs/access.log \
 EXPOSE 9080 9443
 
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
-COPY ./check_standalone_config.sh /check_standalone_config.sh
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
