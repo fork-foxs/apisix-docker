@@ -19,7 +19,7 @@ jobs:
           - debian
           - redhat
     env:
-      APISIX_DOCKER_TAG: 3.16.0-${{ matrix.platform }}
+      APISIX_DOCKER_TAG: 3.17.0-${{ matrix.platform }}
 
     steps:
       - name: Check out the repo
@@ -34,7 +34,11 @@ jobs:
 
       - name: Test route
         run: |
-          grep -C 3 '\[error\]' compose/apisix_log/error.log && exit 1
+          # error.log is symlinked to stderr, so check the container logs
+          if docker logs compose-apisix-1 2>&1 | grep -C 3 '\[error\]'; then
+            echo "found errors in apisix startup logs"
+            exit 1
+          fi
 
           curl http://127.0.0.1:9180/apisix/admin/routes/1 \
           -H 'X-API-KEY: edd1c9f034335f136f87ad84b625c8f1' -X PUT -d '
@@ -43,7 +47,7 @@ jobs:
             "upstream": {
                 "type": "roundrobin",
                 "nodes": {
-                    "httpbin.org:80": 1
+                    "httpbin:80": 1
                 }
             }
           }'
@@ -62,7 +66,7 @@ jobs:
 
       - name: Login to Docker Hub
         if: ${{ startsWith(github.ref_name, 'release/apisix') }}
-        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}

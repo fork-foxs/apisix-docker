@@ -17,13 +17,13 @@
 
 FROM registry.access.redhat.com/ubi9/ubi:9.6
 
-ARG APISIX_VERSION=3.16.0
+ARG APISIX_VERSION=3.17.0
 LABEL apisix_version="${APISIX_VERSION}"
 COPY ./yum.repos.d/apache-apisix.repo /etc/yum.repos.d/apache-apisix.repo
 COPY ./yum.repos.d/openresty.repo /etc/yum.repos.d/openresty.repo
 
 RUN yum update -y \
-	&& yum install -y apisix-${APISIX_VERSION} wget\
+	&& yum install -y apisix-${APISIX_VERSION} wget libxml2 libxslt\
 	&& yum clean all \
 	&& sed -i 's/PASS_MAX_DAYS\t99999/PASS_MAX_DAYS\t60/g' /etc/login.defs
 
@@ -43,7 +43,7 @@ RUN groupadd --system --gid 636 apisix \
 # forward request and error logs to docker log collector
 RUN ln -sf /dev/stdout /usr/local/apisix/logs/access.log \
     && ln -sf /dev/stderr /usr/local/apisix/logs/error.log \
-    && rm /usr/local/openresty/bin/etcdctl
+    && rm -f /usr/local/openresty/bin/etcdctl
 
 USER apisix
 

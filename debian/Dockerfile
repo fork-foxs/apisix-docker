@@ -17,7 +17,7 @@
 
 FROM debian:bookworm-slim
 
-ARG APISIX_VERSION=3.16.0
+ARG APISIX_VERSION=3.17.0
 
 RUN set -ex; \
     arch=$(dpkg --print-architecture); \
@@ -35,9 +35,9 @@ RUN set -ex; \
         ;; \
     esac; \
     apt update \
-    && apt install -y apisix=${APISIX_VERSION}-0 \
+    && apt install -y apisix=${APISIX_VERSION}-0 libxml2 libxslt1.1 \
     && apt-get purge -y --auto-remove \
-    && rm /usr/local/openresty/bin/etcdctl \
+    && rm -f /usr/local/openresty/bin/etcdctl \
     && openresty -V \
     && apisix version
 

@@ -17,11 +17,11 @@
 
 ARG ENABLE_PROXY=false
 ARG ETCD_VERSION=v3.4.14
-ARG APISIX_VERSION=3.16.0
+ARG APISIX_VERSION=3.17.0
 ARG APISIX_DASHBOARD_VERSION=master
 
 # Build Apache APISIX (using official package with apisix-nginx-module)
-FROM debian:bullseye-slim AS production-stage
+FROM debian:bookworm-slim AS production-stage
 
 ARG APISIX_VERSION
 LABEL apisix_version="${APISIX_VERSION}"
@@ -30,7 +30,7 @@ RUN set -ex; \
     arch=$(dpkg --print-architecture); \
     apt update; \
     apt-get -y install --no-install-recommends wget gnupg ca-certificates curl; \
-    codename=`grep -Po 'VERSION="[0-9]+ \(\K[^)]+' /etc/os-release`; \
+    codename="debian12"; \
     case "${arch}" in \
       amd64) \
         wget -O - https://repos.apiseven.com/pubkey.gpg | apt-key add - \
@@ -101,7 +101,7 @@ RUN if [ "$ENABLE_PROXY" = "true" ] ; then yarn config set registry https://regi
     && yarn build
 
 # Finally combine all the resources into one image
-FROM debian:bullseye-slim AS last-stage
+FROM debian:bookworm-slim AS last-stage
 
 # add runtime for Apache APISIX
 RUN apt update \
@@ -110,6 +110,7 @@ RUN apt update \
        curl \
        ca-certificates \
        libyaml-0-2 \
+       libpcre3 \
        lua5.1 \
     && rm -rf /var/lib/apt/lists/*
 
